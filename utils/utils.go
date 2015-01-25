@@ -16,3 +16,9 @@ func WriteError(err error, w http.ResponseWriter, httpStatus int) {
   fmt.Printf("ERROR: %s\n", err.Error())
   w.WriteHeader(httpStatus)
 }
+
+func PanicIf(err error) {
+  if err != nil {
+    panic(err)
+  }
+}

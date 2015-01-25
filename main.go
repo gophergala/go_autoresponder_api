@@ -4,8 +4,10 @@ import (
   "net/http"
   //"os"
   "github.com/codegangsta/negroni"
-  //"github.com/heridev/go_autoresponder_api/controllers/subscribers"
+  "github.com/heridev/go_autoresponder_api/controllers/subscribers"
   "github.com/heridev/go_autoresponder_api/models/subscriber"
+  "github.com/heridev/go_autoresponder_api/models/email_list"
+  "github.com/heridev/go_autoresponder_api/utils"
   "github.com/gorilla/mux"
   "github.com/jinzhu/gorm"
   _ "github.com/lib/pq"
@@ -22,9 +24,11 @@ type DBHandler struct {
 func InitDb() gorm.DB {
   // connect to db using standard Go database/sql API
   db, err := gorm.Open("postgres", "dbname=hmail sslmode=disable")
-  PanicIf(err)
+  utils.PanicIf(err)
 
-  db.CreateTable(subscriber.Subscriber{})
+  // Automating Migration
+  db.AutoMigrate(&subscriber.Subscriber{},
+                 &email_list.EmailList{})
   return db
 }
 
@@ -45,7 +49,8 @@ func main() {
 
 func CreateRoutes(h *DBHandler) *mux.Router {
   r := mux.NewRouter()
-  r.HandleFunc("/subscribers",  h.subscribersIndexHandler).Methods("GET")
+  r.HandleFunc("/subscribers",  subscribers.IndexHandler ).Methods("GET")
+  r.HandleFunc("/lists",  h.listsIndexHandler).Methods("GET")
   return r
 }
 
@@ -53,9 +58,19 @@ func (h *DBHandler) subscribersIndexHandler(w http.ResponseWriter, req *http.Req
   var subscribers []subscriber.Subscriber
   h.db.Find(&subscribers)
   if subscribers == nil {
-    h.r.JSON(w, http.StatusOK, nil) // If we have no subscribers, just return an empty array, instead of null.
+    h.r.JSON(w, http.StatusOK, "[]") // If we have no subscribers, just return an empty array, instead of null.
   } else {
     h.r.JSON(w, http.StatusOK, &subscribers)
+  }
+}
+
+func (h *DBHandler) listsIndexHandler(w http.ResponseWriter, req *http.Request) {
+  var lists []email_list.EmailList
+  h.db.Find(&lists)
+  if lists == nil {
+    h.r.JSON(w, http.StatusOK, "[]") // If we have no subscribers, just return an empty array, instead of null.
+  } else {
+    h.r.JSON(w, http.StatusOK, &lists)
   }
 }
 

@@ -3,6 +3,7 @@ package utils
 import (
   "fmt"
   "net/http"
+  "gopkg.in/unrolled/render.v1"
 )
 
 func WriteOkResponse(w http.ResponseWriter, httpStatus int, body []byte) {
@@ -21,4 +22,8 @@ func PanicIf(err error) {
   if err != nil {
     panic(err)
   }
+}
+
+func Render() *render.Render {
+  return render.New()
 }

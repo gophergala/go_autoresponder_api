@@ -19,3 +19,7 @@ func IndexHandler(w http.ResponseWriter, req *http.Request) {
     utils.Render().JSON(w, http.StatusOK, &subscribers)
   }
 }
+
+func Create(w http.ResponseWriter, req *http.Request) {
+
+}

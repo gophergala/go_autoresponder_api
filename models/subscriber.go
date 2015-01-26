@@ -1,4 +1,4 @@
-package subscriber
+package models
 
 import (
   "time"

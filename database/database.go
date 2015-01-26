@@ -4,9 +4,7 @@ import (
   "github.com/jinzhu/gorm"
   _ "github.com/lib/pq"
   "github.com/heridev/go_autoresponder_api/utils"
-  "github.com/heridev/go_autoresponder_api/models/subscriber"
-  "github.com/heridev/go_autoresponder_api/models/email_list"
-  "github.com/heridev/go_autoresponder_api/models/autoresponder"
+  "github.com/heridev/go_autoresponder_api/models"
 )
 
 var DbInstance gorm.DB
@@ -17,16 +15,16 @@ func InitDb() {
   DbInstance, err = gorm.Open("postgres", "dbname=hmail sslmode=disable")
   utils.PanicIf(err)
 
-  DbInstance.AutoMigrate(&subscriber.Subscriber{},
-                         &email_list.EmailList{},
-                         &autoresponder.Autoresponder{})
+  DbInstance.AutoMigrate(&models.Subscriber{},
+                         &models.EmailList{},
+                         &models.Autoresponder{})
 
   DbInstance.DB().SetMaxIdleConns(20)
 
-  autoresponder := autoresponder.Autoresponder{
+  autoresponder := models.Autoresponder{
     Title:            "title autoresponder",
     Description:      "description goes here",
-    Lists:          []email_list.EmailList{
+    Lists:          []models.EmailList{
                       {
                         Title: "template 1",
                         Content: "<h1>Template 1</h1>",
